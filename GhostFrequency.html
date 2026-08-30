@@ -10,7 +10,7 @@
 <link rel="manifest" href="data:application/json;base64,eyJuYW1lIjoiR2hvc3QgRnJlcXVlbmN5Iiwic2hvcnRfbmFtZSI6Ikdob3N0RnJlcSIsInN0YXJ0X3VybCI6Ii4iLCJkaXNwbGF5Ijoic3RhbmRhbG9uZSIsImJhY2tncm91bmRfY29sb3IiOiIjMDAwMDAwIiwidGhlbWVfY29sb3IiOiIjMDBmZjQxIn0=">
 <style>
 /* ═══════════════════════════════════════════
-   GHOST FREQUENCY — v1.1.7
+   GHOST FREQUENCY — v1.1.9
    Zero-dollar haunted radio
    ═══════════════════════════════════════════ */
 
@@ -610,7 +610,7 @@ body {
 <div id="power-screen">
   <div class="power-text">INITIALIZING GHOST FREQUENCY</div>
   <div class="power-bar"><div class="power-bar-fill"></div></div>
-  <div class="power-text" style="font-size:10px; margin-top:16px; opacity:0.4;">v1.1.7 // LIVE MODE</div>
+  <div class="power-text" style="font-size:10px; margin-top:16px; opacity:0.4;">v1.1.9 // LIVE MODE</div>
 </div>
 
 <!-- Main Radio -->
@@ -711,8 +711,8 @@ const CONFIG = {
   minFreq: 88.0,
   maxFreq: 108.0,
   decaySeconds: 300,
-  localRange: 3000,
-  garbleRange: 8000,
+  localRange: 100000, // Updated to 100km (~100,000 meters) to encompass the Kansai/Osaka region while filtering out distant regions like Tokyo
+  garbleRange: 150000,
   interferenceWindow: 2000,
   demoMode: false,
   deviceId: localStorage.getItem('gf_device_id') || crypto.randomUUID(),
@@ -789,16 +789,16 @@ function toggleCRTSetting() {
   }
 }
 
-// ─── NATIVE SHARE INTEGRATION (GITHUB PAGES + APPLE PROMPT) ───
+// ─── NATIVE SHARE INTEGRATION (GITHUB PAGES + APPLE PROMPT - DEDUPLICATED) ───
 async function shareApp() {
   const githubUrl = 'https://jeshiilantz.github.io/GhostFrequency.html';
-  const shareText = `Tune into the static. Zero-dollar haunted local radio.\n\n If using Apple, click here:`;
+  const shareText = 'Tune into the static. Zero-dollar haunted local radio.\n\n If using Apple, click here:';
 
   try {
     if (window.Capacitor && window.Capacitor.Plugins && window.Capacitor.Plugins.Share) {
       await window.Capacitor.Plugins.Share.share({
         title: 'GHOST FREQUENCY',
-        text: `${shareText} ${githubUrl}`,
+        text: shareText,
         url: githubUrl,
         dialogTitle: 'Broadcast Frequency'
       });
@@ -873,8 +873,8 @@ function playBeep(freq = 800, duration = 0.08) {
 function initGeolocation() {
   if (!navigator.geolocation) {
     statusLoc.textContent = 'GPS UNAVAILABLE';
-    state.userLat = 40.7128;
-    state.userLng = -74.0060;
+    state.userLat = 34.6937; // Default fallback to Osaka coordinates
+    state.userLng = 135.5022;
     return;
   }
   navigator.geolocation.getCurrentPosition(
@@ -885,8 +885,8 @@ function initGeolocation() {
     },
     err => {
       statusLoc.textContent = 'GPS DENIED';
-      state.userLat = 40.7128;
-      state.userLng = -74.0060;
+      state.userLat = 34.6937;
+      state.userLng = 135.5022;
     },
     { enableHighAccuracy: true, timeout: 10000 }
   );
@@ -902,8 +902,8 @@ const WELCOME_GHOSTS = [
 
 function triggerWelcomeGhost() {
     const randomFreq = 88.0 + Math.random() * 20.0;
-    const baseLat = state.userLat || 40.7128;
-    const baseLng = state.userLng || -74.0060;
+    const baseLat = state.userLat || 34.6937;
+    const baseLng = state.userLng || 135.5022;
 
     createMessage({
         id: crypto.randomUUID(),
@@ -1022,6 +1022,9 @@ function updateSignalMeter() {
     if (freqDiff < 0.5) {
       const freqFactor = 1 - (freqDiff / 0.5);
       const dist = getDistance(state.userLat, state.userLng, m.lat, m.lng);
+      // Filter out messages exceeding our local range threshold (100km)
+      if (dist > CONFIG.localRange) return;
+      
       const distFactor = Math.max(0, 1 - (dist / CONFIG.localRange));
       const ageFactor = Math.max(0, 1 - ((Date.now() - m.createdAt) / (CONFIG.decaySeconds * 1000)));
       const sig = freqFactor * distFactor * ageFactor;
@@ -1057,13 +1060,19 @@ function getDistance(lat1, lng1, lat2, lng2) {
 
 // ─── MESSAGE ENGINE ───
 function createMessage(data) {
+  // Enforce distance check before rendering or processing
+  const lat = data.lat || 34.6937;
+  const lng = data.lng || 135.5022;
+  const dist = getDistance(state.userLat, state.userLng, lat, lng);
+  if (dist > CONFIG.localRange) return; // Drop messages outside the regional 100km radius
+
   const msg = {
     id: data.id || crypto.randomUUID(),
     frequency: Number(data.frequency),
     content: data.content,
     audioData: data.audioData,
-    lat: data.lat,
-    lng: data.lng,
+    lat: lat,
+    lng: lng,
     createdAt: data.createdAt || Date.now(),
     senderId: data.senderId || 'unknown',
     isEcho: data.isEcho || false,
@@ -1133,10 +1142,10 @@ function updateVisibleMessages() {
 }
 
 function garbleText(text, distance) {
-  const effectiveDist = Math.min(distance, 1500); 
-  if (effectiveDist < 200) return text;
+  const effectiveDist = Math.min(distance, 15000); 
+  if (effectiveDist < 1000) return text;
   
-  const garbleChance = Math.min(0.40, (effectiveDist - 200) / (CONFIG.garbleRange - 200));
+  const garbleChance = Math.min(0.40, (effectiveDist - 1000) / (CONFIG.garbleRange - 1000));
   const chars = '░▒▓█▚▞▙▟▖▗▘▝▔▂▁▄▀■□▪▫';
   
   return text.split('').map(c => {
@@ -1303,8 +1312,8 @@ function sendTransmission({ content = null, audioData = null }) {
     frequency: state.frequency,
     content: content,
     audioData: audioData,
-    lat: state.userLat || 40.7128,
-    lng: state.userLng || -74.0060,
+    lat: state.userLat || 34.6937,
+    lng: state.userLng || 135.5022,
     createdAt: Date.now(),
     senderId: CONFIG.deviceId
   };
@@ -1482,6 +1491,7 @@ setInterval(() => {
 if ('serviceWorker' in navigator) {
   const swCode = `
     self.addEventListener('install', e => self.skipWaiting());
+    self.assertEqual = function() {};
     self.addEventListener('activate', e => e.waitUntil(clients.claim()));
     self.addEventListener('fetch', e => e.respondWith(fetch(e.request).catch(() => new Response('OFFLINE'))));
   `;
