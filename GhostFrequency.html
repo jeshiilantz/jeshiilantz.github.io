@@ -10,7 +10,7 @@
 <link rel="manifest" href="data:application/json;base64,eyJuYW1lIjoiR2hvc3QgRnJlcXVlbmN5Iiwic2hvcnRfbmFtZSI6Ikdob3N0RnJlcSIsInN0YXJ0X3VybCI6Ii4iLCJkaXNwbGF5Ijoic3RhbmRhbG9uZSIsImJhY2tncm91bmRfY29sb3IiOiIjMDAwMDAwIiwidGhlbWVfY29sb3IiOiIjMDBmZjQxIn0=">
 <style>
 /* ═══════════════════════════════════════════
-   GHOST FREQUENCY — v1.1.4
+   GHOST FREQUENCY — v1.1.6
    Zero-dollar haunted radio
    ═══════════════════════════════════════════ */
 
@@ -126,7 +126,6 @@ body {
   border-bottom: 1px solid rgba(0,255,65,0.1);
   position: relative;
 }
-/* Watermark/Logo badge on header for screenshots */
 #app-brand-badge {
   font-size: 8px;
   letter-spacing: 3px;
@@ -231,7 +230,6 @@ body {
 #message-screen::-webkit-scrollbar { width: 4px; }
 #message-screen::-webkit-scrollbar-thumb { background: var(--phosphor-dim); }
 
-/* Persistent Watermark inside the screenshot viewing area */
 #screen-watermark {
   position: absolute;
   bottom: 12px;
@@ -612,7 +610,7 @@ body {
 <div id="power-screen">
   <div class="power-text">INITIALIZING GHOST FREQUENCY</div>
   <div class="power-bar"><div class="power-bar-fill"></div></div>
-  <div class="power-text" style="font-size:10px; margin-top:16px; opacity:0.4;">v1.1.5 // LIVE MODE</div>
+  <div class="power-text" style="font-size:10px; margin-top:16px; opacity:0.4;">v1.1.6 // LIVE MODE</div>
 </div>
 
 <!-- Main Radio -->
@@ -791,25 +789,28 @@ function toggleCRTSetting() {
   }
 }
 
-// ─── NATIVE SHARE INTEGRATION ───
+// ─── NATIVE SHARE INTEGRATION (GITHUB PAGES + APPLE PROMPT) ───
 async function shareApp() {
+  const githubUrl = 'https://jeshiilantz.github.io/GhostFrequency.html';
+  const shareText = `Tune into the static. Zero-dollar haunted local radio.\n\n If using Apple, click here: ${githubUrl}`;
+
   try {
     if (window.Capacitor && window.Capacitor.Plugins && window.Capacitor.Plugins.Share) {
       await window.Capacitor.Plugins.Share.share({
         title: 'GHOST FREQUENCY',
-        text: 'Tune into the static. Zero-dollar haunted local radio.',
-        url: 'https://umyxnuqwrskgzkuvefea.supabase.co',
+        text: shareText,
+        url: githubUrl,
         dialogTitle: 'Broadcast Frequency'
       });
     } else if (navigator.share) {
       await navigator.share({
         title: 'GHOST FREQUENCY',
-        text: 'Tune into the static. Zero-dollar haunted local radio.',
-        url: window.location.href
+        text: shareText,
+        url: githubUrl
       });
     } else {
-      navigator.clipboard.writeText(window.location.href);
-      alert('App link copied to clipboard!');
+      navigator.clipboard.writeText(shareText);
+      alert('App link and share text copied to clipboard!');
     }
   } catch (err) {
     if (err.name !== 'AbortError') {
@@ -1132,7 +1133,6 @@ function updateVisibleMessages() {
 }
 
 function garbleText(text, distance) {
-  // Cap effective distance scaling so local/nearby messages stay readable
   const effectiveDist = Math.min(distance, 1500); 
   if (effectiveDist < 200) return text;
   
