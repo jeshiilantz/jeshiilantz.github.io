@@ -749,6 +749,7 @@ let mediaRecorder = null;
 let audioChunks = [];
 let holdTimer = null;
 let isRecordingVoice = false;
+let lastNotificationTime = 0; // Tracks when the last push notification was sent to prevent spamming
 
 // ─── DOM REFS ───
 const $ = id => document.getElementById(id);
@@ -893,6 +894,16 @@ function initGeolocation() {
     },
     { enableHighAccuracy: true, timeout: 10000 }
   );
+}
+
+// ─── NOTIFICATION PERMISSION ───
+async function requestNotificationPermission() {
+  if (window.Capacitor && window.Capacitor.Plugins && window.Capacitor.Plugins.LocalNotifications) {
+    const perm = await window.Capacitor.Plugins.LocalNotifications.requestPermissions();
+    if (perm.display !== 'granted') {
+      console.log('Notification permission denied');
+    }
+  }
 }
 
 // ─── WELCOME GHOST TRANSMISSION ───
@@ -1419,7 +1430,7 @@ function setupRealtime() {
     .subscribe();
 }
 
-function triggerNearbyOperatorAlert(msg, distance) {
+async function triggerNearbyOperatorAlert(msg, distance) {
   playBeep(1200, 0.1);
   setTimeout(() => playBeep(1500, 0.15), 150);
 
@@ -1430,6 +1441,29 @@ function triggerNearbyOperatorAlert(msg, distance) {
 
   statusCount.textContent = `NEARBY OPERATOR (${Math.round(distance)}M)!`;
   statusCount.style.color = 'var(--red)';
+
+  // Rate limit notifications to at most once every 30 minutes (1800000 ms) to avoid spamming users
+  const now = Date.now();
+  const halfHour = 30 * 60 * 1000;
+  if (now - lastNotificationTime >= halfHour) {
+    lastNotificationTime = now;
+    if (window.Capacitor && window.Capacitor.Plugins && window.Capacitor.Plugins.LocalNotifications) {
+      try {
+        await window.Capacitor.Plugins.LocalNotifications.schedule({
+          notifications: [
+            {
+              title: '⚠️ GHOST FREQUENCY INTERCEPT',
+              body: `Operator nearby (~${Math.round(distance)}m) on ${msg.frequency.toFixed(1)} MHz!`,
+              id: Date.now() % 2147483647,
+              schedule: { at: new Date(Date.now() + 500) }
+            }
+          ]
+        });
+      } catch (e) {
+        console.error('Failed to trigger local notification:', e);
+      }
+    }
+  }
 }
 
 // ─── POWER ON SEQUENCE (LIVE-LOCKED) ───
@@ -1450,6 +1484,7 @@ window.addEventListener('load', () => {
       clearTimeout(safetyTimeout);
       
       try { initGeolocation(); } catch(e) { console.log('GPS skipped'); }
+      try { requestNotificationPermission(); } catch(e) { console.log('Notification permission skipped'); }
       try { initAudio(); } catch(e) { console.log('Audio deferred'); }
 
       try {
