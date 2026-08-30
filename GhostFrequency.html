@@ -10,7 +10,7 @@
 <link rel="manifest" href="data:application/json;base64,eyJuYW1lIjoiR2hvc3QgRnJlcXVlbmN5Iiwic2hvcnRfbmFtZSI6Ikdob3N0RnJlcSIsInN0YXJ0X3VybCI6Ii4iLCJkaXNwbGF5Ijoic3RhbmRhbG9uZSIsImJhY2tncm91bmRfY29sb3IiOiIjMDAwMDAwIiwidGhlbWVfY29sb3IiOiIjMDBmZjQxIn0=">
 <style>
 /* ═══════════════════════════════════════════
-   GHOST FREQUENCY — v1.1.6
+   GHOST FREQUENCY — v1.1.7
    Zero-dollar haunted radio
    ═══════════════════════════════════════════ */
 
@@ -610,7 +610,7 @@ body {
 <div id="power-screen">
   <div class="power-text">INITIALIZING GHOST FREQUENCY</div>
   <div class="power-bar"><div class="power-bar-fill"></div></div>
-  <div class="power-text" style="font-size:10px; margin-top:16px; opacity:0.4;">v1.1.6 // LIVE MODE</div>
+  <div class="power-text" style="font-size:10px; margin-top:16px; opacity:0.4;">v1.1.7 // LIVE MODE</div>
 </div>
 
 <!-- Main Radio -->
@@ -792,13 +792,13 @@ function toggleCRTSetting() {
 // ─── NATIVE SHARE INTEGRATION (GITHUB PAGES + APPLE PROMPT) ───
 async function shareApp() {
   const githubUrl = 'https://jeshiilantz.github.io/GhostFrequency.html';
-  const shareText = `Tune into the static. Zero-dollar haunted local radio.\n\n If using Apple, click here: ${githubUrl}`;
+  const shareText = `Tune into the static. Zero-dollar haunted local radio.\n\n If using Apple, click here:`;
 
   try {
     if (window.Capacitor && window.Capacitor.Plugins && window.Capacitor.Plugins.Share) {
       await window.Capacitor.Plugins.Share.share({
         title: 'GHOST FREQUENCY',
-        text: shareText,
+        text: `${shareText} ${githubUrl}`,
         url: githubUrl,
         dialogTitle: 'Broadcast Frequency'
       });
@@ -809,7 +809,7 @@ async function shareApp() {
         url: githubUrl
       });
     } else {
-      navigator.clipboard.writeText(shareText);
+      navigator.clipboard.writeText(`${shareText} ${githubUrl}`);
       alert('App link and share text copied to clipboard!');
     }
   } catch (err) {
