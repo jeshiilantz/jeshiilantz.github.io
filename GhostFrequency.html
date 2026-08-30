@@ -43,7 +43,7 @@ html, body {
 }
 
 body {
-  padding-bottom: 60px; /* Reserves space for the AdMob banner */
+  padding-bottom: 110px; /* Reserves space for the AdMob banner */
 }
 
 /* ─── CRT OVERLAY ─── */
@@ -1447,19 +1447,19 @@ window.addEventListener('load', () => {
 
 async function initAdMob() {
   try {
-    const { AdMob, BannerAdPosition, BannerAdSize } = window.Capacitor.Plugins;
+    const { AdMob } = window.Capacitor.Plugins;
     
     await AdMob.initialize({ requestTrackingAuthorization: true });
 
     await AdMob.showBanner({
       adId: 'ca-app-pub-3940256099942544/6300978111', // Test ID
-      position: BannerAdPosition.BOTTOM_CENTER,
-      size: BannerAdSize.BANNER,
+      position: 'BOTTOM_CENTER',
+      size: 'BANNER',
       margin: 0,
       isTesting: true
     });
   } catch (e) {
-    console.log('AdMob not available on web preview', e);
+    console.log('AdMob banner error:', e);
   }
 }
 
