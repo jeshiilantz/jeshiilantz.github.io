@@ -1397,6 +1397,14 @@ function setupRealtime() {
       const m = payload.new;
       if (!m || m.sender_id === CONFIG.deviceId) return; 
       
+      // Filter out Python bot automated transmissions for proximity alerts
+      const isBot = m.sender_id === 'GHOST-STATION-01' || m.sender_id.startsWith('SYSTEM-GHOST');
+      const dist = getDistance(state.userLat, state.userLng, m.lat, m.lng);
+      
+      if (!isBot && dist <= 100) {
+        triggerNearbyOperatorAlert(m, dist);
+      }
+
       createMessage({
         id: m.id || crypto.randomUUID(),
         frequency: Number(m.frequency),
@@ -1409,6 +1417,19 @@ function setupRealtime() {
       });
     })
     .subscribe();
+}
+
+function triggerNearbyOperatorAlert(msg, distance) {
+  playBeep(1200, 0.1);
+  setTimeout(() => playBeep(1500, 0.15), 150);
+
+  hotSignal.classList.add('active');
+  setTimeout(() => {
+    if (state.activeUsersOnFreq < 3) hotSignal.classList.remove('active');
+  }, 4000);
+
+  statusCount.textContent = `NEARBY OPERATOR (${Math.round(distance)}M)!`;
+  statusCount.style.color = 'var(--red)';
 }
 
 // ─── POWER ON SEQUENCE (LIVE-LOCKED) ───
