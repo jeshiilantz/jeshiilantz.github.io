@@ -10,7 +10,7 @@
 <link rel="manifest" href="data:application/json;base64,eyJuYW1lIjoiR2hvc3QgRnJlcXVlbmN5Iiwic2hvcnRfbmFtZSI6Ikdob3N0RnJlcSIsInN0YXJ0X3VybCI6Ii4iLCJkaXNwbGF5Ijoic3RhbmRhbG9uZSIsImJhY2tncm91bmRfY29sb3IiOiIjMDAwMDAwIiwidGhlbWVfY29sb3IiOiIjMDBmZjQxIn0=">
 <style>
 /* ═══════════════════════════════════════════
-   GHOST FREQUENCY — v1.1.9
+   GHOST FREQUENCY — v1.2.0
    Zero-dollar haunted radio
    ═══════════════════════════════════════════ */
 
@@ -793,28 +793,28 @@ function toggleCRTSetting() {
   }
 }
 
-// ─── NATIVE SHARE INTEGRATION (GITHUB PAGES + APPLE PROMPT - DEDUPLICATED) ───
+// ─── NATIVE SHARE INTEGRATION (EXACT FORMATTED TEXT) ───
 async function shareApp() {
-  const githubUrl = 'https://jeshiilantz.github.io/GhostFrequency.html';
-  const shareText = 'Tune into the static. Zero-dollar haunted local radio.\n\n If using Apple, click here:';
+  const playStoreUrl = 'https://play.google.com/store/apps/details?id=com.ghostfrequency.app';
+  const iosUrl = 'https://jeshiilantz.github.io/GhostFrequency.html';
+  
+  const shareText = `Tune into the static. Zero-dollar haunted local radio.\n\nCheck it out Andriod: ${playStoreUrl}\nOn IOS use the web version: ${iosUrl}`;
 
   try {
     if (window.Capacitor && window.Capacitor.Plugins && window.Capacitor.Plugins.Share) {
       await window.Capacitor.Plugins.Share.share({
         title: 'GHOST FREQUENCY',
         text: shareText,
-        url: githubUrl,
         dialogTitle: 'Broadcast Frequency'
       });
     } else if (navigator.share) {
       await navigator.share({
         title: 'GHOST FREQUENCY',
-        text: shareText,
-        url: githubUrl
+        text: shareText
       });
     } else {
-      navigator.clipboard.writeText(`${shareText} ${githubUrl}`);
-      alert('App link and share text copied to clipboard!');
+      navigator.clipboard.writeText(shareText);
+      alert('App share text copied to clipboard!');
     }
   } catch (err) {
     if (err.name !== 'AbortError') {
@@ -1493,7 +1493,7 @@ window.addEventListener('load', () => {
         fetchRecentTransmissions();
         statusMode.textContent = 'LIVE AIRWAVES';
         statusMode.style.color = 'var(--phosphor)';
-        
+         
         setTimeout(triggerWelcomeGhost, 1000);
         initAdMob();
 
