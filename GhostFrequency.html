@@ -10,7 +10,7 @@
 <link rel="manifest" href="data:application/json;base64,eyJuYW1lIjoiR2hvc3QgRnJlcXVlbmN5Iiwic2hvcnRfbmFtZSI6Ikdob3N0RnJlcSIsInN0YXJ0X3VybCI6Ii4iLCJkaXNwbGF5Ijoic3RhbmRhbG9uZSIsImJhY2tncm91bmRfY29sb3IiOiIjMDAwMDAwIiwidGhlbWVfY29sb3IiOiIjMDBmZjQxIn0=">
 <style>
 /* ═══════════════════════════════════════════
-   GHOST FREQUENCY — v1.2.0
+   GHOST FREQUENCY — v1.2.5 (WITH HEATMAP)
    Zero-dollar haunted radio
    ═══════════════════════════════════════════ */
 
@@ -108,6 +108,69 @@ body {
 }
 @keyframes powerFill { to { width: 100%; } }
 
+/* ─── ONBOARDING SPLASH ─── */
+#onboarding-screen {
+  position: fixed; inset: 0;
+  background: var(--bg);
+  z-index: 9000;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+}
+.onboarding-content {
+  border: 1px solid var(--phosphor-dim);
+  background: rgba(0,255,65,0.03);
+  padding: 30px 20px;
+  max-width: 400px;
+  width: 100%;
+  box-shadow: inset 0 0 20px rgba(0,0,0,0.8), 0 0 30px rgba(0,255,65,0.05);
+}
+.onboarding-header {
+  font-size: 18px;
+  letter-spacing: 5px;
+  text-align: center;
+  margin-bottom: 24px;
+  color: var(--amber);
+  text-shadow: 0 0 10px rgba(255,176,0,0.5);
+  border-bottom: 1px solid var(--amber);
+  padding-bottom: 10px;
+}
+.onboarding-step {
+  margin-bottom: 16px;
+}
+.step-title {
+  font-size: 13px;
+  font-weight: bold;
+  letter-spacing: 2px;
+  margin-bottom: 2px;
+  color: var(--phosphor);
+}
+.step-desc {
+  font-size: 11px;
+  line-height: 1.4;
+  opacity: 0.7;
+}
+#acknowledge-btn {
+  width: 100%;
+  margin-top: 10px;
+  padding: 12px;
+  background: transparent;
+  border: 2px solid var(--phosphor);
+  color: var(--phosphor);
+  font-family: inherit;
+  font-size: 13px;
+  letter-spacing: 4px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+#acknowledge-btn:hover {
+  background: var(--phosphor);
+  color: #000;
+  box-shadow: 0 0 20px var(--phosphor-glow);
+}
+
 /* ─── MAIN RADIO CHASSIS ─── */
 #radio {
   width: 100%; height: 100%;
@@ -127,13 +190,14 @@ body {
   position: relative;
 }
 #app-brand-badge {
-  font-size: 8px;
-  letter-spacing: 3px;
-  opacity: 0.7;
+  font-size: 12px;
+  letter-spacing: 4px;
+  opacity: 0.9;
   color: var(--amber);
   text-transform: uppercase;
-  margin-bottom: 2px;
-  text-shadow: 0 0 5px rgba(255,176,0,0.3);
+  margin-bottom: 4px;
+  text-shadow: 0 0 8px rgba(255,176,0,0.5);
+  font-weight: bold;
 }
 #freq-label {
   font-size: 9px;
@@ -155,10 +219,10 @@ body {
   margin-left: 4px;
 }
 
-/* ─── SIGNAL METER ─── */
+/* ─── SIGNAL METER (WAVEFORM) ─── */
 #meter-section {
   flex: 0 0 auto;
-  padding: 6px 16px;
+  padding: 8px 16px;
   display: flex;
   align-items: center;
   gap: 12px;
@@ -170,42 +234,13 @@ body {
   writing-mode: vertical-rl;
   transform: rotate(180deg);
 }
-#meter {
+#meter-canvas {
   flex: 1;
-  height: 20px;
+  height: 48px;
   background: #0a0a0a;
   border: 1px solid rgba(0,255,65,0.2);
-  position: relative;
-  overflow: hidden;
-}
-#meter-fill {
-  height: 100%;
-  width: 0%;
-  background: linear-gradient(90deg, var(--phosphor-dim), var(--phosphor));
-  box-shadow: 0 0 15px var(--phosphor-glow);
-  transition: width 0.15s ease-out;
-  position: relative;
-}
-#meter-fill::after {
-  content: '';
-  position: absolute;
-  right: 0; top: 0; bottom: 0;
-  width: 3px;
-  background: #fff;
-  box-shadow: 0 0 8px #fff;
-}
-.meter-ticks {
-  position: absolute;
-  inset: 0;
-  display: flex;
-  justify-content: space-between;
-  padding: 0 4px;
-  pointer-events: none;
-}
-.meter-tick {
-  width: 1px;
-  height: 100%;
-  background: rgba(0,255,65,0.15);
+  border-radius: 2px;
+  width: 100%;
 }
 
 /* ─── CENTER: MESSAGE DISPLAY (THE SCREEN) ─── */
@@ -610,7 +645,31 @@ body {
 <div id="power-screen">
   <div class="power-text">INITIALIZING GHOST FREQUENCY</div>
   <div class="power-bar"><div class="power-bar-fill"></div></div>
-  <div class="power-text" style="font-size:10px; margin-top:16px; opacity:0.4;">v1.1.9 // LIVE MODE</div>
+  <div class="power-text" style="font-size:10px; margin-top:16px; opacity:0.4;">v1.2.5 // LIVE MODE</div>
+</div>
+
+<!-- Operator Onboarding Splash -->
+<div id="onboarding-screen" style="display: none;">
+  <div class="onboarding-content">
+    <div class="onboarding-header">⚠ OPERATOR PROTOCOL</div>
+    
+    <div class="onboarding-step">
+      <div class="step-title">1. GLOBAL EMERGENCY CHANNEL</div>
+      <div class="step-desc"><strong style="color:var(--amber);">104.5 MHz</strong> is an unrestricted global broadcast band. <span style="color:var(--red);">NOTICE: This is a fictional simulation game only and NOT a real emergency broadcast system.</span></div>
+    </div>
+
+    <div class="onboarding-step">
+      <div class="step-title">2. LOCAL PROXIMITY</div>
+      <div class="step-desc">Other frequencies are bound to your GPS coordinates. Signals beyond 100km degrade into static.</div>
+    </div>
+
+    <div class="onboarding-step">
+      <div class="step-title">3. SIGNAL DECAY</div>
+      <div class="step-desc">Nothing is permanent. All transmissions decay and vanish from the airwaves after 5 minutes.</div>
+    </div>
+
+    <button id="acknowledge-btn" onclick="completeOnboarding()">ACKNOWLEDGE & INITIALIZE</button>
+  </div>
 </div>
 
 <!-- Main Radio -->
@@ -618,24 +677,16 @@ body {
   <!-- Frequency Display -->
   <div id="freq-section">
     <div id="app-brand-badge">▼ GHOST FREQUENCY APP</div>
-    <div id="freq-label">TUNING FREQUENCY</div>
+    <div id="freq-label" id="channel-mode-label">TUNING FREQUENCY</div>
     <div id="freq-display">
       <span id="freq-value">104.5</span><span class="mhz">MHz</span>
     </div>
   </div>
 
-  <!-- Signal Meter -->
+  <!-- Signal Meter (Canvas Waveform) -->
   <div id="meter-section">
     <div id="meter-label">SIG</div>
-    <div id="meter">
-      <div id="meter-fill"></div>
-      <div class="meter-ticks">
-        <div class="meter-tick"></div><div class="meter-tick"></div><div class="meter-tick"></div>
-        <div class="meter-tick"></div><div class="meter-tick"></div><div class="meter-tick"></div>
-        <div class="meter-tick"></div><div class="meter-tick"></div><div class="meter-tick"></div>
-        <div class="meter-tick"></div>
-      </div>
-    </div>
+    <canvas id="meter-canvas" width="300" height="48"></canvas>
   </div>
 
   <!-- Message Screen -->
@@ -676,7 +727,7 @@ body {
   <span id="status-loc">NO GPS</span>
 </div>
 
-<!-- Settings Modal -->
+<!-- Settings Modal with Global Static Heatmap Radar View -->
 <div id="setup-modal">
   <div class="setup-box">
     <h2>RADIO SETTINGS</h2>
@@ -694,7 +745,12 @@ body {
       <input type="checkbox" id="crt-toggle" checked onchange="toggleCRTSetting()">
     </div>
 
-    <!-- NEW REPORT BUTTON TO SATISFY GOOGLE PLAY POLICY -->
+    <label style="margin-top:14px;">GLOBAL STATIC HEATMAP RADAR</label>
+    <div style="background:#0a0f0a; border:1px solid rgba(0,255,65,0.2); height:110px; position:relative; overflow:hidden; border-radius:2px; margin-bottom:10px;" id="heatmap-container">
+      <canvas id="heatmap-canvas" width="370" height="110" style="width:100%; height:100%; display:block;"></canvas>
+      <div style="position:absolute; bottom:4px; right:6px; font-size:8px; opacity:0.4; letter-spacing:1px;">ACTIVE NODES SCAN</div>
+    </div>
+
     <button class="btn-secondary" style="border-color: var(--red); color: var(--red); margin-bottom: 10px;" onclick="window.location.href='mailto:Jesse.Lantz@gmail.com?subject=URGENT:%20Ghost%20Frequency%20Safety%20Report'">REPORT ABUSE / SAFETY CONCERN</button>
 
     <button class="btn-secondary" onclick="shareApp()">SHARE GHOST FREQUENCY</button>
@@ -714,7 +770,7 @@ const CONFIG = {
   minFreq: 88.0,
   maxFreq: 108.0,
   decaySeconds: 300,
-  localRange: 100000, // Updated to 100km (~100,000 meters) to encompass the Kansai/Osaka region while filtering out distant regions like Tokyo
+  localRange: 100000, 
   garbleRange: 150000,
   interferenceWindow: 2000,
   demoMode: false,
@@ -743,18 +799,18 @@ let state = {
   crtEnabled: true,
   lastKnobTime: 0,
   scanDirection: 1,
-  activeUsersOnFreq: 0
+  activeUsersOnFreq: 0,
+  signalStrength: 0
 };
 let mediaRecorder = null;
 let audioChunks = [];
 let holdTimer = null;
 let isRecordingVoice = false;
-let lastNotificationTime = 0; // Tracks when the last push notification was sent to prevent spamming
+let lastNotificationTime = 0; 
 
 // ─── DOM REFS ───
 const $ = id => document.getElementById(id);
 const freqValue = $('freq-value');
-const meterFill = $('meter-fill');
 const messageScreen = $('message-screen');
 const knob = $('knob');
 const pttBtn = $('ptt-btn');
@@ -763,6 +819,16 @@ const statusMode = $('status-mode');
 const statusCount = $('status-count');
 const statusLoc = $('status-loc');
 const hotSignal = $('hot-signal');
+const freqLabel = $('freq-label');
+
+const meterCanvas = $('meter-canvas');
+const meterCtx = meterCanvas ? meterCanvas.getContext('2d') : null;
+let wavePhase = 0;
+
+// Heatmap canvas setup
+const heatmapCanvas = $('heatmap-canvas');
+const heatmapCtx = heatmapCanvas ? heatmapCanvas.getContext('2d') : null;
+let radarAngle = 0;
 
 // Initialize input fields from config
 window.addEventListener('DOMContentLoaded', () => {
@@ -793,12 +859,11 @@ function toggleCRTSetting() {
   }
 }
 
-// ─── NATIVE SHARE INTEGRATION (EXACT FORMATTED TEXT) ───
+// ─── NATIVE SHARE INTEGRATION ───
 async function shareApp() {
   const playStoreUrl = 'https://play.google.com/store/apps/details?id=com.ghostfrequency.app';
   const iosUrl = 'https://jeshiilantz.github.io/GhostFrequency.html';
-  
-  const shareText = `Tune into the static. Zero-dollar haunted local radio.\n\nCheck it out Andriod: ${playStoreUrl}\nOn IOS use the web version: ${iosUrl}`;
+  const shareText = `Tune into the static. Zero-dollar haunted local radio.\n\nAndroid Closed Beta: ${playStoreUrl}\niOS Web Version: ${iosUrl}`;
 
   try {
     if (window.Capacitor && window.Capacitor.Plugins && window.Capacitor.Plugins.Share) {
@@ -877,7 +942,7 @@ function playBeep(freq = 800, duration = 0.08) {
 function initGeolocation() {
   if (!navigator.geolocation) {
     statusLoc.textContent = 'GPS UNAVAILABLE';
-    state.userLat = 34.6937; // Default fallback to Osaka coordinates
+    state.userLat = 34.6937; 
     state.userLng = 135.5022;
     return;
   }
@@ -953,6 +1018,15 @@ function updateKnob(angle) {
   knob.style.transform = `rotate(${state.knobAngle}deg)`;
   state.frequency = angleToFreq(state.knobAngle);
   freqValue.textContent = state.frequency.toFixed(1);
+  
+  if (Math.abs(state.frequency - 104.5) < 0.05) {
+    freqLabel.textContent = "EMERGENCY BROADCAST (GLOBAL)";
+    freqLabel.style.color = "var(--amber)";
+  } else {
+    freqLabel.textContent = "TUNING FREQUENCY";
+    freqLabel.style.color = "";
+  }
+
   updateSignalMeter();
   updateVisibleMessages();
 }
@@ -1025,21 +1099,126 @@ function scanLoop() {
   }
 }
 
-// ─── SIGNAL METER ───
+// ─── SIGNAL METER (WAVEFORM & LOGIC) ───
+function drawWaveform() {
+  if (!meterCtx || !meterCanvas) return;
+  const width = meterCanvas.width;
+  const height = meterCanvas.height;
+  
+  meterCtx.fillStyle = 'rgba(10, 10, 10, 0.3)';
+  meterCtx.fillRect(0, 0, width, height);
+
+  const strength = state.signalStrength || 0;
+  
+  meterCtx.beginPath();
+  meterCtx.lineWidth = 2;
+  
+  if (strength > 0.1) {
+    meterCtx.strokeStyle = '#00ff41';
+    meterCtx.shadowBlur = 10;
+    meterCtx.shadowColor = '#00ff41';
+  } else {
+    meterCtx.strokeStyle = 'rgba(0, 170, 42, 0.4)';
+    meterCtx.shadowBlur = 0;
+  }
+
+  const centerY = height / 2;
+  const amplitude = (strength * (height * 0.42)) + 2; 
+  const frequency = 0.05 + (strength * 0.05); 
+
+  meterCtx.moveTo(0, centerY);
+  
+  for (let x = 0; x < width; x++) {
+    const noiseMag = Math.max(0, 1 - (strength * 1.5));
+    const noise = (Math.random() - 0.5) * 6 * noiseMag;
+    const y = centerY + Math.sin(x * frequency + wavePhase) * amplitude + noise;
+    meterCtx.lineTo(x, y);
+  }
+  
+  meterCtx.stroke();
+  
+  wavePhase -= 0.1 + (strength * 0.2); 
+  requestAnimationFrame(drawWaveform);
+}
+requestAnimationFrame(drawWaveform);
+
+// ─── GLOBAL STATIC HEATMAP RADAR RENDERER ───
+function drawHeatmapRadar() {
+  if (!heatmapCtx || !heatmapCanvas) return;
+  const width = heatmapCanvas.width;
+  const height = heatmapCanvas.height;
+  const cx = width / 2;
+  const cy = height / 2;
+  
+  heatmapCtx.fillStyle = 'rgba(5, 10, 5, 0.9)';
+  heatmapCtx.fillRect(0, 0, width, height);
+  
+  // Draw radar grid rings
+  heatmapCtx.strokeStyle = 'rgba(0, 255, 65, 0.15)';
+  heatmapCtx.lineWidth = 1;
+  heatmapCtx.beginPath();
+  heatmapCtx.arc(cx, cy, 25, 0, Math.PI * 2);
+  heatmapCtx.arc(cx, cy, 45, 0, Math.PI * 2);
+  heatmapCtx.arc(cx, cy, 54, 0, Math.PI * 2);
+  heatmapCtx.stroke();
+
+  // Draw crosshairs
+  heatmapCtx.beginPath();
+  heatmapCtx.moveTo(0, cy); heatmapCtx.lineTo(width, cy);
+  heatmapCtx.moveTo(cx, 0); heatmapCtx.lineTo(cx, height);
+  heatmapCtx.stroke();
+
+  // Draw sweeping radar line
+  heatmapCtx.strokeStyle = 'rgba(0, 255, 65, 0.6)';
+  heatmapCtx.lineWidth = 1.5;
+  heatmapCtx.beginPath();
+  heatmapCtx.moveTo(cx, cy);
+  heatmapCtx.lineTo(cx + Math.cos(radarAngle) * 55, cy + Math.sin(radarAngle) * 55);
+  heatmapCtx.stroke();
+  
+  radarAngle += 0.04;
+
+  // Plot active live message nodes as glowing points on radar
+  state.messages.forEach(m => {
+    if (m.dead) return;
+    // Map lat/lng or simulated offset relative to center
+    const hash = (m.id.charCodeAt(0) * 13) % 40 - 20;
+    const hashY = (m.id.charCodeAt(1) * 17) % 40 - 20;
+    const px = cx + hash;
+    const py = cy + hashY;
+    
+    heatmapCtx.fillStyle = Math.abs(m.frequency - 104.5) < 0.05 ? '#ffb000' : '#00ff41';
+    heatmapCtx.shadowBlur = 8;
+    heatmapCtx.shadowColor = heatmapCtx.fillStyle;
+    heatmapCtx.beginPath();
+    heatmapCtx.arc(px, py, 3, 0, Math.PI * 2);
+    heatmapCtx.fill();
+    heatmapCtx.shadowBlur = 0;
+  });
+
+  requestAnimationFrame(drawHeatmapRadar);
+}
+requestAnimationFrame(drawHeatmapRadar);
+
 function updateSignalMeter() {
   let strength = 0;
   let count = 0;
+
+  const isGlobalChannel = Math.abs(state.frequency - 104.5) < 0.05;
 
   state.messages.forEach(m => {
     if (m.dead) return;
     const freqDiff = Math.abs(m.frequency - state.frequency);
     if (freqDiff < 0.5) {
       const freqFactor = 1 - (freqDiff / 0.5);
-      const dist = getDistance(state.userLat, state.userLng, m.lat, m.lng);
-      // Filter out messages exceeding our local range threshold (100km)
-      if (dist > CONFIG.localRange) return;
       
-      const distFactor = Math.max(0, 1 - (dist / CONFIG.localRange));
+      let distFactor = 1;
+      if (!isGlobalChannel) {
+        const dist = getDistance(state.userLat, state.userLng, m.lat, m.lng);
+        if (dist > CONFIG.localRange) return;
+        distFactor = Math.max(0, 1 - (dist / CONFIG.localRange));
+      }
+      
       const ageFactor = Math.max(0, 1 - ((Date.now() - m.createdAt) / (CONFIG.decaySeconds * 1000)));
       const sig = freqFactor * distFactor * ageFactor;
       strength = Math.max(strength, sig);
@@ -1048,7 +1227,7 @@ function updateSignalMeter() {
   });
 
   state.activeUsersOnFreq = count;
-  meterFill.style.width = (strength * 100) + '%';
+  state.signalStrength = strength;
   setStaticVolume(1 - strength);
 
   if (count >= 3) {
@@ -1074,15 +1253,19 @@ function getDistance(lat1, lng1, lat2, lng2) {
 
 // ─── MESSAGE ENGINE ───
 function createMessage(data) {
-  // Enforce distance check before rendering or processing
   const lat = data.lat || 34.6937;
   const lng = data.lng || 135.5022;
-  const dist = getDistance(state.userLat, state.userLng, lat, lng);
-  if (dist > CONFIG.localRange) return; // Drop messages outside the regional 100km radius
+  const freq = Number(data.frequency);
+  const isGlobalChannel = Math.abs(freq - 104.5) < 0.05;
+
+  if (!isGlobalChannel) {
+    const dist = getDistance(state.userLat, state.userLng, lat, lng);
+    if (dist > CONFIG.localRange) return; 
+  }
 
   const msg = {
     id: data.id || crypto.randomUUID(),
-    frequency: Number(data.frequency),
+    frequency: freq,
     content: data.content,
     audioData: data.audioData,
     lat: lat,
@@ -1113,7 +1296,6 @@ function createMessage(data) {
     }, 3000);
   }
 
-  // Prevent duplicate message entries if reloading existing ID
   if (!state.messages.some(existing => existing.id === msg.id)) {
     state.messages.push(msg);
     renderMessage(msg);
@@ -1122,7 +1304,6 @@ function createMessage(data) {
   updateSignalMeter();
   updateVisibleMessages();
 
-  // Schedule expiration based on remaining time if loaded from history
   const elapsed = Date.now() - msg.createdAt;
   const remainingLife = (CONFIG.decaySeconds * 1000) - elapsed;
 
@@ -1156,6 +1337,9 @@ function updateVisibleMessages() {
 }
 
 function garbleText(text, distance) {
+  const isGlobalChannel = Math.abs(state.frequency - 104.5) < 0.05;
+  if (isGlobalChannel) return text; 
+
   const effectiveDist = Math.min(distance, 15000); 
   if (effectiveDist < 1000) return text;
   
@@ -1178,7 +1362,8 @@ function renderMessage(msg) {
   if (msg.hasInterference && !msg.interferenceResolved) el.classList.add('interference');
 
   const dist = getDistance(state.userLat, state.userLng, msg.lat, msg.lng);
-  const distText = dist < 1000 ? `${Math.round(dist)}m` : `${(dist/1000).toFixed(1)}km`;
+  const isGlobalChannel = Math.abs(msg.frequency - 104.5) < 0.05;
+  const distText = isGlobalChannel ? 'GLOBAL' : (dist < 1000 ? `${Math.round(dist)}m` : `${(dist/1000).toFixed(1)}km`);
   const age = Math.floor((Date.now() - msg.createdAt) / 1000);
 
   let bodyHTML = msg.audioData 
@@ -1408,7 +1593,6 @@ function setupRealtime() {
       const m = payload.new;
       if (!m || m.sender_id === CONFIG.deviceId) return; 
       
-      // Filter out Python bot automated transmissions for proximity alerts
       const isBot = m.sender_id === 'GHOST-STATION-01' || m.sender_id.startsWith('SYSTEM-GHOST');
       const dist = getDistance(state.userLat, state.userLng, m.lat, m.lng);
       
@@ -1442,7 +1626,6 @@ async function triggerNearbyOperatorAlert(msg, distance) {
   statusCount.textContent = `NEARBY OPERATOR (${Math.round(distance)}M)!`;
   statusCount.style.color = 'var(--red)';
 
-  // Rate limit notifications to at most once every 30 minutes (1800000 ms) to avoid spamming users
   const now = Date.now();
   const halfHour = 30 * 60 * 1000;
   if (now - lastNotificationTime >= halfHour) {
@@ -1466,43 +1649,51 @@ async function triggerNearbyOperatorAlert(msg, distance) {
   }
 }
 
-// ─── POWER ON SEQUENCE (LIVE-LOCKED) ───
+// ─── POWER ON & ONBOARDING SEQUENCE ───
 window.addEventListener('load', () => {
-  const safetyTimeout = setTimeout(() => {
-    const pScreen = $('power-screen');
-    if (pScreen && pScreen.style.display !== 'none') {
-      pScreen.classList.add('off');
-      setTimeout(() => pScreen.style.display = 'none', 1500);
-      statusMode.textContent = 'LIVE AIRWAVES';
-    }
-  }, 3500);
+  const hasOnboarded = localStorage.getItem('gf_onboarded');
 
   setTimeout(() => {
     $('power-screen').classList.add('off');
+    
     setTimeout(() => {
       $('power-screen').style.display = 'none';
-      clearTimeout(safetyTimeout);
-      
-      try { initGeolocation(); } catch(e) { console.log('GPS skipped'); }
-      try { requestNotificationPermission(); } catch(e) { console.log('Notification permission skipped'); }
-      try { initAudio(); } catch(e) { console.log('Audio deferred'); }
 
-      try {
-        state.supabase = supabase.createClient(CONFIG.supabaseUrl, CONFIG.supabaseKey);
-        setupRealtime();
-        fetchRecentTransmissions();
-        statusMode.textContent = 'LIVE AIRWAVES';
-        statusMode.style.color = 'var(--phosphor)';
-         
-        setTimeout(triggerWelcomeGhost, 1000);
-        initAdMob();
-
-      } catch (e) {
-        console.error('Connection failed', e);
+      if (!hasOnboarded) {
+        $('onboarding-screen').style.display = 'flex';
+        try { initAudio(); } catch(e) { console.log('Audio deferred'); }
+      } else {
+        launchRadio();
       }
     }, 1500);
   }, 2800);
 });
+
+function completeOnboarding() {
+  localStorage.setItem('gf_onboarded', 'true');
+  $('onboarding-screen').style.display = 'none';
+  playBeep(1200, 0.1);
+  launchRadio();
+}
+
+function launchRadio() {
+  try { initGeolocation(); } catch(e) { console.log('GPS skipped'); }
+  try { requestNotificationPermission(); } catch(e) { console.log('Notification permission skipped'); }
+  try { initAudio(); } catch(e) { console.log('Audio deferred'); }
+
+  try {
+    state.supabase = supabase.createClient(CONFIG.supabaseUrl, CONFIG.supabaseKey);
+    setupRealtime();
+    fetchRecentTransmissions();
+    statusMode.textContent = 'LIVE AIRWAVES';
+    statusMode.style.color = 'var(--phosphor)';
+    
+    setTimeout(triggerWelcomeGhost, 1000);
+    initAdMob();
+  } catch (e) {
+    console.error('Connection failed', e);
+  }
+}
 
 async function initAdMob() {
   try {
@@ -1511,7 +1702,7 @@ async function initAdMob() {
     await AdMob.initialize({ requestTrackingAuthorization: true });
 
     await AdMob.showBanner({
-      adId: 'ca-app-pub-3940256099942544/6300978111', // Test ID
+      adId: 'ca-app-pub-3940256099942544/6300978111', 
       position: 'BOTTOM_CENTER',
       size: 'BANNER',
       margin: 0,
