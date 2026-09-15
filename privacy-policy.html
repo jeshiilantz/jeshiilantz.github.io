@@ -15,15 +15,18 @@
     a { color: #0066cc; }
   </style>
 <base target="_blank">
+<base target="_blank">
 </head>
 <body>
   <h1>Privacy Policy</h1>
-  <p class="updated">Last updated: August 22, 2026</p>
+  <p class="updated">Last updated: September 15, 2026</p>
 
-  <p>This privacy policy applies to all mobile applications published by Jeshii Lantz, including <strong>Rokuyo(六曜) — The Daily Fortune</strong> and <strong>Japan Driving Test Pro</strong>.</p>
+  <p>This privacy policy applies to all mobile applications and web services published by Jeshii Lantz, including <strong>Rokuyo(六曜) — The Daily Fortune</strong>, <strong>Japan Driving Test Pro</strong>, the <strong>GuideOS</strong> mobile application, and the <strong>getguideos.com</strong> website.</p>
 
-  <h2>Information We Collect</h2>
-  <p>Our apps do not collect any personally identifiable information directly. However, we use third-party services that may collect certain data:</p>
+  <h2>1. Consumer Apps (Rokuyo, Japan Driving Test Pro)</h2>
+
+  <h3>Information We Collect</h3>
+  <p>These apps do not collect any personally identifiable information directly. However, we use third-party services that may collect certain data:</p>
   <ul>
     <li><strong>Advertising ID</strong> — Used by Google AdMob to serve personalized or non-personalized ads</li>
     <li><strong>App Interactions</strong> — How you use the app (buttons tapped, screens viewed)</li>
@@ -31,39 +34,75 @@
     <li><strong>Device Information</strong> — Device model, OS version, and general location (country/region level)</li>
   </ul>
 
-  <h2>Third-Party Services</h2>
-  <p>We use the following third-party services:</p>
+  <h3>Third-Party Services (Consumer Apps)</h3>
   <ul>
-    <li><strong>Google AdMob</strong> — For displaying advertisements. AdMob may use your advertising ID to personalize ads. You can opt out of personalized ads in your device settings. <a href="https://policies.google.com/privacy" target="_blank">Google Privacy Policy</a></li>
+    <li><strong>Google AdMob</strong> — For displaying advertisements. <a href="https://policies.google.com/privacy">Google Privacy Policy</a></li>
     <li><strong>Google Play Services</strong> — For app distribution and basic analytics</li>
-    <li><strong>Google Firebase</strong> — For processing app performance data, crash reporting, and analytics.</li>
-     
+    <li><strong>Google Firebase</strong> — For app performance data, crash reporting, and analytics</li>
   </ul>
 
-  <h2>How We Use Your Data</h2>
+  <h2>2. GuideOS (Business Platform — app and getguideos.com)</h2>
+  <p>GuideOS is a business-to-business platform used by tour companies to manage guides, schedules, and customer bookings. It is intended for adults (18+) who work for, or book tours with, those companies.</p>
+
+  <h3>Information We Collect (GuideOS)</h3>
   <ul>
-    <li>To display relevant advertisements</li>
-    <li>To improve app performance and fix bugs</li>
-    <li>To understand how users interact with the app</li>
+    <li><strong>Account Information</strong> — Email address, display name, and password (stored only as a secure hash) when you register or are invited to a workspace</li>
+    <li><strong>Booking Information</strong> — Guest name, email address, party size, and payment amount when booking a tour</li>
+    <li><strong>Guide Profile Content</strong> — Photos, biographies, and availability schedules that guides choose to add</li>
+    <li><strong>Precise Location</strong> — During an active tour only, guides may share GPS coordinates with their company's dispatch so the operation can verify the tour is on route. Location sharing is opt-in per tour, visible to the guide, and stops when the tour ends</li>
+    <li><strong>Camera</strong> — Used solely to scan guest booking QR codes for check-in; images are processed on-device and are not uploaded or stored</li>
+    <li><strong>Operational Data</strong> — Tour reports (guest counts, tips amounts, incident notes), team messages, and uploaded training files within a company workspace</li>
   </ul>
 
-  <h2>Data Sharing</h2>
-  <p>We do not sell your personal data. Data is shared only with the third-party services listed above to provide app functionality and advertising.</p>
-
-  <h2>Your Rights</h2>
+  <h3>How GuideOS Data Is Shared</h3>
   <ul>
-    <li>You can reset your advertising ID in your device settings (Settings → Google → Ads → Reset advertising ID)</li>
-    <li>You can opt out of personalized ads in your device settings</li>
-    <li>You can uninstall the app at any time</li>
+    <li>Within your tour company workspace: owners, managers, and dispatchers can see guide schedules, availability, tour reports, and live tour locations (as described above)</li>
+    <li>Tour booking details (name, party size) are visible to the guides running that tour</li>
+    <li>We <strong>never sell</strong> personal data, and we do not use workspace data for advertising</li>
   </ul>
 
-  <h2>Children's Privacy</h2>
-  <p>Our apps are not intended for children under 13. We do not knowingly collect data from children under 13.</p>
+  <h3>Third-Party Services (GuideOS)</h3>
+  <ul>
+    <li><strong>Vercel</strong> — Website/application hosting (data processed on servers in the region selected at setup)</li>
+    <li><strong>Neon (PostgreSQL)</strong> — Database hosting of workspace data</li>
+    <li><strong>Stripe</strong> — Payment processing for paid tours. Card details are entered directly on Stripe's checkout and are never stored on our servers. <a href="https://stripe.com/privacy">Stripe Privacy Policy</a></li>
+    <li><strong>Resend (via Amazon SES)</strong> — Delivery of transactional emails (booking confirmations, reminders)</li>
+    <li><strong>LINE Messaging API</strong> — Optional guide notifications. Guides pair their LINE account voluntarily by sending a code to our official account, and can unlink at any time by sending STOP</li>
+    <li><strong>Vercel Blob</strong> — Storage of photos and documents uploaded by workspaces</li>
+    <li><strong>Cloudflare</strong> — Domain/DNS services</li>
+  </ul>
 
-  <h2>Changes to This Policy</h2>
+  <h3>Data Retention & Deletion (GuideOS)</h3>
+  <p>Workspace data is retained while the workspace is active. Tour companies can remove guides, bookings, and files at any time; deleting a guide profile removes its linked data. To delete your account or request data removal, contact us at the email below. Payment records are retained as required for accounting and tax purposes.</p>
+
+  <h2>3. How We Use Data (All Products)</h2>
+  <ul>
+    <li>To provide and operate the app's or service's core functionality</li>
+    <li>To improve performance and fix bugs</li>
+    <li>To understand how users interact with the product (consumer apps only)</li>
+    <li>To deliver requested communications (booking confirmations, guide assignments) — GuideOS only, never marketing unless explicitly requested</li>
+  </ul>
+
+  <h2>4. Data Sharing (All Products)</h2>
+  <p>We do not sell personal data. Data is shared only with the third-party services listed above, limited to what is required to operate each product.</p>
+
+  <h2>5. Your Rights</h2>
+  <ul>
+    <li>You can reset your advertising ID or opt out of personalized ads in your device settings (consumer apps)</li>
+    <li>You can uninstall any app at any time</li>
+    <li>GuideOS: you may correct your profile data, revoke LINE linking (send STOP to the bot), and request export or deletion of your data by contacting us. We honor rights granted under applicable law, including Japan's Act on the Protection of Personal Information (APPI)</li>
+  </ul>
+
+  <h2>6. Children's Privacy</h2>
+  <p>Our consumer apps are not intended for children under 13, and GuideOS is intended solely for adults (18+) using it for work or tour bookings. We do not knowingly collect data from children.</p>
+
+  <h2>7. Security</h2>
+  <p>GuideOS traffic is encrypted in transit (HTTPS/TLS), passwords are stored only as salted hashes, and access to workspace data is restricted to authenticated members of that workspace. Platform-owner access to workspaces is access-controlled and logged.</p>
+
+  <h2>8. Changes to This Policy</h2>
   <p>We may update this privacy policy from time to time. Changes will be posted on this page with an updated date.</p>
 
-  <h2>Contact Us</h2>
-  <p>If you have any questions about this privacy policy, please contact us through the Google Play Store listing.</p>
+  <h2>9. Contact Us</h2>
+  <p>If you have any questions about this privacy policy, contact us at <a href="mailto:jeshiilantz@gmail.com">jeshiilantz@gmail.com</a> or through the Google Play Store listing.</p>
 </body>
 </html>
