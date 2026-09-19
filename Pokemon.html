@@ -120,7 +120,10 @@ select.input{cursor:pointer;}
     <div class="card">
       <h3 class="sec" data-i="identify">Identify & price</h3>
       <p class="hint" data-i="identifyHint">Type the card name, set or number — card data and images from TCGdex (free, multilingual), market prices from the Pokémon TCG price index.</p>
-      <input class="input" id="q" data-i-ph="searchPh" placeholder="e.g. Charizard, 151, Umbreon VMAX…">
+      <div style="display:flex;gap:8px;">
+        <input class="input" id="q" data-i-ph="searchPh" placeholder="e.g. Charizard, 151, Umbreon VMAX…" style="flex:1;">
+        <button class="btn sm" id="btnSearch" data-i="searchBtn" style="white-space:nowrap;">🔍 Search</button>
+      </div>
       <div class="results" id="results"></div>
     </div>
     <div class="card hidden" id="detailCard" style="margin-top:16px;"></div>
@@ -187,7 +190,7 @@ camHint:"Point your camera at the card and capture, or upload a photo. Then sear
 startCam:"Start camera",stopCam:"Stop camera",capture:"Capture",retake:"Retake",upload:"Upload photo",
 camOn:"Camera on — align the card and capture.",camOff:"Camera stopped.",camErr:"Camera unavailable (needs HTTPS/localhost and permission). Use upload instead.",
 identify:"Identify & price",identifyHint:"Type the card name, set or number — card data and images from TCGdex (free, multilingual), market prices from the Pokémon TCG price index.",
-searchPh:"Search name, set, or number…",searching:"Searching live database…",noResults:"No matches — try another name or number.",
+searchPh:"Search name, set, or number…",searchBtn:"🔍 Search",typeMore:"Type at least 2 characters — a name, or a card number like 036/103.",searching:"Searching live database…",noResults:"No matches — try another name or number.",
 rarity:"Rarity",set:"Set",num:"No.",price:"Market price",live:"LIVE",demo:"DEMO",fetched:"Fetched",
 addTo:"Add to battle",you:"You",friend:"Friend",pack1:"Pack 1",pack2:"Pack 2",add:"Add",
 bTitle:"Pack battle — 2 packs × 5 cards each",bHint:"Identify a card in the Scanner tab, or search below. Highest total value takes the stakes.",
@@ -202,7 +205,7 @@ camHint:"カードにカメラを向けて撮影するか、写真をアップ�
 startCam:"カメラを起動",stopCam:"カメラを停止",capture:"撮影",retake:"撮り直す",upload:"写真をアップロード",
 camOn:"カメラ起動中 — カードを合わせて撮影してください。",camOff:"カメラを停止しました。",camErr:"カメラを利用できません（HTTPS/localhostと許可が必要）。アップロードをご利用ください。",
 identify:"カードを特定して査定",identifyHint:"カード名・セット・番号を入力 — カードデータと画像はTCGdex（無料・多言語）、相場はポケモンTCG価格インデックスから取得。",
-searchPh:"名前・セット・番号で検索…",searching:"ライブDBを検索中…",noResults:"見つかりません — 別の名前や番号を試してください。",
+searchPh:"名前・セット・番号で検索…",searchBtn:"🔍 検索",typeMore:"2文字以上入力 — カード名、または 036/103 のような番号。",searching:"ライブDBを検索中…",noResults:"見つかりません — 別の名前や番号を試してください。",
 rarity:"レアリティ",set:"セット",num:"No.",price:"相場価格",live:"ライブ",demo:"デモ",fetched:"取得",
 addTo:"対決に追加",you:"あなた",friend:"友達",pack1:"パック1",pack2:"パック2",add:"追加",
 bTitle:"パック対決 — 2パックずつ（各5枚）",bHint:"スキャナータブでカードを特定するか、下で検索。合計金額の高い方が賭けに勝ち。",
@@ -313,6 +316,8 @@ $("file").onchange=e=>{
 /* ================= live search: TCGdex catalog + price index ================= */
 let lastDetail=null, debounce=null;
 $("q").addEventListener("input",()=>{clearTimeout(debounce);debounce=setTimeout(doSearch,450);});
+$("q").addEventListener("keydown",e=>{if(e.key==="Enter"){clearTimeout(debounce);doSearch();}});
+$("btnSearch").onclick=()=>{clearTimeout(debounce);doSearch();};
 
 function usdFromPTCG(c){
   const p=c.tcgplayer && c.tcgplayer.prices;
@@ -352,12 +357,14 @@ async function fetchPrice(item){
 }
 async function doSearch(){
   const q=$("q").value.trim();
-  if(q.length<2){renderResults([]);return;}
+  if(q.length<2){$("results").innerHTML=`<div class="status">${t("typeMore")}</div>`;return;}
   $("results").innerHTML=`<div class="status">${t("searching")}</div>`;
   let items=[];
   try{
     const loc=lang==="ja"?"ja":"en";
-    const r=await fetch(`https://api.tcgdex.net/v2/${loc}/cards?name=${encodeURIComponent(q)}`);
+    const num=q.match(/^0*(\d+)(?:\s*\/\s*\d+)?$/);
+    const filter=num?("localId="+num[1]):("name="+encodeURIComponent(q));
+    const r=await fetch(`https://api.tcgdex.net/v2/${loc}/cards?${filter}`);
     if(r.ok){
       const j=await r.json();
       const arr=Array.isArray(j)?j:(j.data||[]);
@@ -482,7 +489,7 @@ function playerHtml(pi){
     ${best?`<div style="font-size:11px;color:var(--muted);">${t("bestPull")}: <b style="color:var(--text)">${best.n}</b></div>`:""}
     <div style="margin-top:10px;">
       <div style="font-size:11px;color:var(--faint);margin-bottom:4px;">${t("quickAdd")}</div>
-      <input class="input" id="bq${pi}" placeholder="${t("searchPh")}" style="font-size:13px;padding:8px 10px;">
+      <div style="display:flex;gap:6px;"><input class="input" id="bq${pi}" placeholder="${t("searchPh")}" style="font-size:13px;padding:8px 10px;flex:1;"><button class="btn sm" id="bbtn${pi}" data-i="searchBtn" style="white-space:nowrap;">🔍</button></div>
       <div class="results" id="bres${pi}" style="max-height:180px;"></div>
     </div>`;
 }
@@ -491,33 +498,35 @@ function renderPlayers(){
   [0,1].forEach(pi=>{
     $("nm"+pi).oninput=e=>{players[pi].name=e.target.value;localStorage.setItem("pv_n"+(pi+1),e.target.value);renderVerdict();};
     let db=null;
-    $("bq"+pi).addEventListener("input",()=>{
-      clearTimeout(db);
+    const bRun=async()=>{
       const q=$("bq"+pi).value.trim();
-      if(q.length<2){$("bres"+pi).innerHTML="";return;}
-      db=setTimeout(async()=>{
-        let items=[];
-        try{
-          const loc=lang==="ja"?"ja":"en";
-          const r=await fetch(`https://api.tcgdex.net/v2/${loc}/cards?name=${encodeURIComponent(q)}`);
-          if(r.ok){const j=await r.json();const arr=Array.isArray(j)?j:(j.data||[]);
-            items=arr.slice(0,5).map(c=>({id:c.id||Math.random().toString(36).slice(2),n:c.name||"",set:(c.set&&c.set.name)||"",num:c.localId||"",r:c.rarity||"",img:c.image||"",usd:0,src:"live"}));}
-        }catch(e){}
-        for(const it of items){it.usd=await fetchPrice(it);await new Promise(res=>setTimeout(res,120));}
-        if(!items.length){
-          const ql=q.toLowerCase();
-          items=DEMO.filter(c=>c.n.toLowerCase().includes(ql)||c.num.includes(ql)).map(c=>({...c,id:"d"+c.num,img:"",src:"demo"})).slice(0,5);
-        }
-        const pk=k=>k===0?t("pack1").replace("Pack ","").replace("パック",""):t("pack2").replace("Pack ","").replace("パック","");
-        $("bres"+pi).innerHTML=items.map(c=>`
-          <div class="res-row">
-            <div class="n" style="cursor:default"><b>${c.n}</b><i>${c.set} · ${c.num}</i></div>
-            <div class="p num">${c.usd?price(c):"—"}</div>
-            <button class="btn sm" style="padding:4px 8px;font-size:11px;" onclick='addPull(${pi},0,${JSON.stringify(c).replace(/'/g,"&#39;")})'>→${pk(0)}</button>
-            <button class="btn ghost sm" style="padding:4px 8px;font-size:11px;" onclick='addPull(${pi},1,${JSON.stringify(c).replace(/'/g,"&#39;")})'>→${pk(1)}</button>
-          </div>`).join("")||`<div class="status">${t("noResults")}</div>`;
-      },450);
-    });
+      if(q.length<2){$("bres"+pi).innerHTML=`<div class="status">${t("typeMore")}</div>`;return;}
+      let items=[];
+      try{
+        const loc=lang==="ja"?"ja":"en";
+        const num=q.match(/^0*(\d+)(?:\s*\/\s*\d+)?$/);
+        const filter=num?("localId="+num[1]):("name="+encodeURIComponent(q));
+        const r=await fetch(`https://api.tcgdex.net/v2/${loc}/cards?${filter}`);
+        if(r.ok){const j=await r.json();const arr=Array.isArray(j)?j:(j.data||[]);
+          items=arr.slice(0,5).map(c=>({id:c.id||Math.random().toString(36).slice(2),n:c.name||"",set:(c.set&&c.set.name)||"",num:c.localId||"",r:c.rarity||"",img:c.image||"",usd:0,src:"live"}));}
+      }catch(e){}
+      for(const it of items){it.usd=await fetchPrice(it);await new Promise(res=>setTimeout(res,120));}
+      if(!items.length){
+        const ql=q.toLowerCase();
+        items=DEMO.filter(c=>c.n.toLowerCase().includes(ql)||c.num.includes(ql)).map(c=>({...c,id:"d"+c.num,img:"",src:"demo"})).slice(0,5);
+      }
+      const pk=k=>k===0?t("pack1").replace("Pack ","").replace("パック",""):t("pack2").replace("Pack ","").replace("パック","");
+      $("bres"+pi).innerHTML=items.map(c=>`
+        <div class="res-row">
+          <div class="n" style="cursor:default"><b>${c.n}</b><i>${c.set} · ${c.num}</i></div>
+          <div class="p num">${c.usd?price(c):"—"}</div>
+          <button class="btn sm" style="padding:4px 8px;font-size:11px;" onclick='addPull(${pi},0,${JSON.stringify(c).replace(/'/g,"&#39;")})'>→${pk(0)}</button>
+          <button class="btn ghost sm" style="padding:4px 8px;font-size:11px;" onclick='addPull(${pi},1,${JSON.stringify(c).replace(/'/g,"&#39;")})'>→${pk(1)}</button>
+        </div>`).join("")||`<div class="status">${t("noResults")}</div>`;
+    };
+    $("bq"+pi).addEventListener("input",()=>{clearTimeout(db);db=setTimeout(bRun,450);});
+    $("bq"+pi).addEventListener("keydown",e=>{if(e.key==="Enter"){clearTimeout(db);bRun();}});
+    $("bbtn"+pi).onclick=bRun;
   });
 }
 function renderVerdict(){
